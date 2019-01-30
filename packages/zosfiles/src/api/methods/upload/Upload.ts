@@ -472,7 +472,7 @@ export class Upload {
         ImperativeExpect.toNotBeEqual(ussname, "", ZosFilesMessages.missingUSSDirectoryName.message);
 
         // Check if inputDirectory is directory
-        if(!fs.lstatSync(inputDirectory).isDirectory()) {
+        if(!IO.isDir(inputDirectory)) {
             throw new ImperativeError({
                 msg: ZosFilesMessages.missingInputDirectory.message
             });
@@ -526,6 +526,7 @@ export class Upload {
      * @return {Promise<boolean>}
      */
     public static async isDirectoryExist(session: AbstractSession, ussname: string): Promise<boolean> {
+        ussname = path.posix.normalize(ussname);
         const parameters: string = `${ZosFilesConstants.RES_USS_FILES}?path=${ussname}`;
         try {
             const response: any = await ZosmfRestClient.getExpectJSON(session, ZosFilesConstants.RESOURCE + parameters);
@@ -579,7 +580,6 @@ export class Upload {
                 await this.dirToUSSDirRecursive(session, filePath, tempUssPath, binary, filesMap);
             }
         }));
-        return;
     }
 
     /**
